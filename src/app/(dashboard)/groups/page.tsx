@@ -167,21 +167,31 @@ export default function GroupListPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between space-x-4">
-        <h1 className="text-3xl font-bold">Your Groups</h1>
-        <div className="flex items-center space-x-2">
-          <Input
-            placeholder="Enter invite code"
-            value={inviteCode}
-            onChange={(e) => setInviteCode(e.target.value)}
-            className="h-10 px-3"
-          />
-          <Button onClick={handleJoinGroup} disabled={joining}>
-            {joining ? "Joining..." : "Join"}
-          </Button>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        {/* Left side */}
+        <div>
+          <h1 className="text-3xl font-bold">Your Groups</h1>
+          <p className="text-muted-foreground">
+            Manage, join, and create groups
+          </p>
+        </div>
 
-          <Link href="/groups/create">
-            <Button>
+        {/* Right side: Input + Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="flex w-full sm:w-auto gap-2">
+            <Input
+              placeholder="Enter invite code"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value)}
+              className="h-10 px-3"
+            />
+            <Button onClick={handleJoinGroup} disabled={joining}>
+              {joining ? "Joining..." : "Join"}
+            </Button>
+          </div>
+
+          <Link href="/groups/create" className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Create Group
             </Button>
@@ -190,48 +200,63 @@ export default function GroupListPage() {
       </div>
 
       {/* Group cards */}
+      {/* Group cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {groups.map((group) => (
-          <Card key={group._id} className="relative hover:shadow-md transition">
-            <Link href={`/groups/${group._id}`}>
-              <CardHeader>
-                <CardTitle>{group.name}</CardTitle>
-                <CardDescription>
-                  {group.description || "No description provided."}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="text-sm text-muted-foreground">
-                {group.members.length} members
-              </CardContent>
-            </Link>
-
-            {/* Edit button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-10 text-blue-500 hover:text-blue-700"
-              onClick={(e) => {
-                e.preventDefault();
-                openEditModal(group);
-              }}
+        {groups.length === 0 ? (
+          <div className="col-span-full flex flex-col items-center justify-center py-16 border rounded-lg bg-muted/30">
+            <h2 className="text-xl font-semibold text-foreground">
+              No groups yet
+            </h2>
+            <p className="text-muted-foreground mt-2">
+              Create one to get started
+            </p>
+          </div>
+        ) : (
+          groups.map((group) => (
+            <Card
+              key={group._id}
+              className="relative hover:shadow-md transition"
             >
-              ✏️
-            </Button>
+              <Link href={`/groups/${group._id}`}>
+                <CardHeader>
+                  <CardTitle>{group.name}</CardTitle>
+                  <CardDescription>
+                    {group.description || "No description provided."}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="text-sm text-muted-foreground">
+                  {group.members.length} members
+                </CardContent>
+              </Link>
 
-            {/* Delete button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-2 right-2 text-red-500 hover:text-red-700"
-              onClick={(e) => {
-                e.preventDefault();
-                handleDelete(group._id);
-              }}
-            >
-              <Trash2 className="h-4 w-4" />
-            </Button>
-          </Card>
-        ))}
+              {/* Edit button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-10 text-blue-500 hover:text-blue-700"
+                onClick={(e) => {
+                  e.preventDefault();
+                  openEditModal(group);
+                }}
+              >
+                ✏️
+              </Button>
+
+              {/* Delete button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-2 right-2 text-red-500 hover:text-red-700"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleDelete(group._id);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </Card>
+          ))
+        )}
       </div>
 
       {/* Edit Modal */}

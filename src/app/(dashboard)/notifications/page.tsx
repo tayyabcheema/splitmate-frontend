@@ -135,38 +135,61 @@ export default function NotificationsPage() {
       )}
 
       <div className="space-y-4">
-        {notifications.map((notification) => (
-          <Card
-            key={notification.id}
-            className="border border-muted-foreground/10"
-          >
-            <CardHeader className="flex flex-row items-center space-x-4">
-              <Avatar>
-                <AvatarFallback>{notification.avatar}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <CardTitle className="text-base font-semibold">
-                  {notification.title}
-                </CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {notification.message}
-                </p>
-              </div>
-              {!notification.read && <Badge variant="secondary">New</Badge>}
-              {!notification.read && (
-                <button
-                  onClick={() => markAsRead(notification.id)}
-                  className="ml-2 px-2 py-1 bg-gray-200 text-xs rounded hover:bg-gray-300 cursor-pointer"
-                >
-                  Mark Read
-                </button>
-              )}
-            </CardHeader>
-            <CardContent className="text-xs text-muted-foreground">
-              {notification.time} · {notification.group}
-            </CardContent>
-          </Card>
-        ))}
+        {notifications.length === 0 && !loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border rounded-lg bg-muted/30">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10 mb-3 opacity-50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.5}
+                d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6 6 0 10-12 0v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+              />
+            </svg>
+            <h2 className="text-lg font-semibold">
+              You have no notifications yet
+            </h2>
+            {/* <p className="text-sm">You're all caught up 🎉</p> */}
+          </div>
+        ) : (
+          notifications.map((notification) => (
+            <Card
+              key={notification.id}
+              className="border border-muted-foreground/10"
+            >
+              <CardHeader className="flex flex-row items-center space-x-4">
+                <Avatar>
+                  <AvatarFallback>{notification.avatar}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <CardTitle className="text-base font-semibold">
+                    {notification.title}
+                  </CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    {notification.message}
+                  </p>
+                </div>
+                {!notification.read && <Badge variant="secondary">New</Badge>}
+                {!notification.read && (
+                  <button
+                    onClick={() => markAsRead(notification.id)}
+                    className="ml-2 px-2 py-1 bg-gray-200 text-xs rounded hover:bg-gray-300 cursor-pointer"
+                  >
+                    Mark Read
+                  </button>
+                )}
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground">
+                {notification.time} · {notification.group}
+              </CardContent>
+            </Card>
+          ))
+        )}
       </div>
     </div>
   );

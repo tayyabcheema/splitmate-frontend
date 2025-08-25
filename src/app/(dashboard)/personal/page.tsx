@@ -287,25 +287,36 @@ export default function PersonalExpensesPage() {
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Personal Expenses</h1>
           <p className="text-muted-foreground">
             Track your individual spending and expenses
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExportCSV}>
+
+        {/* Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            onClick={handleExportCSV}
+            className="cursor-pointer w-full sm:w-auto"
+          >
             <Download className="h-4 w-4 mr-2" />
             Export CSV
           </Button>
+
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={resetForm}>
+              <Button
+                onClick={resetForm}
+                className="cursor-pointer w-full sm:w-auto"
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Expense
               </Button>
             </DialogTrigger>
+
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>
@@ -419,142 +430,160 @@ export default function PersonalExpensesPage() {
         </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total Spent</CardDescription>
-            <CardTitle>
-              PKR {expenses.reduce((a, b) => a + b.amount, 0).toFixed(2)}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {expenses.length} expenses
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Average Expense</CardDescription>
-            <CardTitle>
-              PKR{" "}
-              {expenses.length
-                ? (
-                    expenses.reduce((a, b) => a + b.amount, 0) / expenses.length
-                  ).toFixed(2)
-                : "0.00"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Per transaction</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Top Category</CardDescription>
-            <CardTitle>{getTopCategory()?.name || "N/A"}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              PKR {getTopCategory()?.amount?.toFixed(2) || "0.00"} spent
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Expenses Table */}
-      <Card>
-        <div className="flex items-center justify-between px-4 py-2">
-          <h2 className="font-semibold">Your Expenses</h2>
-          <Select onValueChange={(value) => setFilter(value)}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="All Categories" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat}>
-                  {cat}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Agar koi expense nahi hai */}
+      {expenses.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center space-y-4 border rounded-lg">
+          <DollarSign className="h-12 w-12 text-muted-foreground" />
+          <h2 className="text-xl font-semibold">No expenses yet</h2>
+          <p className="text-muted-foreground">
+            Add your first expense to start tracking your spending.
+          </p>
+          <Button onClick={resetForm} className="cursor-pointer">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Expense
+          </Button>
         </div>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Method</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredExpenses.map((expense) => (
-              <TableRow key={expense._id}>
-                <TableCell>
-                  {new Date(expense.date).toLocaleDateString()}
-                </TableCell>
-                <TableCell className="font-medium">
-                  {expense.description}
-                </TableCell>
-                <TableCell>
-                  <Badge variant="secondary">{expense.category}</Badge>
-                </TableCell>
-                <TableCell>
-                  {expense.currency || "PKR"} {expense.amount.toFixed(2)}
-                </TableCell>
-                <TableCell>{expense.method || "N/A"}</TableCell>
-                <TableCell className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(expense)}
-                    className="cursor-pointer"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </Button>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
+      ) : (
+        <>
+          {/* Summary Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Total Spent</CardDescription>
+                <CardTitle>
+                  PKR {expenses.reduce((a, b) => a + b.amount, 0).toFixed(2)}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  {expenses.length} expenses
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Average Expense</CardDescription>
+                <CardTitle>
+                  PKR{" "}
+                  {expenses.length
+                    ? (
+                        expenses.reduce((a, b) => a + b.amount, 0) /
+                        expenses.length
+                      ).toFixed(2)
+                    : "0.00"}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">Per transaction</p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription>Top Category</CardDescription>
+                <CardTitle>{getTopCategory()?.name || "N/A"}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm text-muted-foreground">
+                  PKR {getTopCategory()?.amount?.toFixed(2) || "0.00"} spent
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Expenses Table */}
+          <Card>
+            <div className="flex items-center justify-between px-4 py-2">
+              <h2 className="font-semibold">Your Expenses</h2>
+              <Select onValueChange={(value) => setFilter(value)}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Category</TableHead>
+                  <TableHead>Amount</TableHead>
+                  <TableHead>Method</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredExpenses.map((expense) => (
+                  <TableRow key={expense._id}>
+                    <TableCell>
+                      {new Date(expense.date).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="font-medium">
+                      {expense.description}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">{expense.category}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {expense.currency || "PKR"} {expense.amount.toFixed(2)}
+                    </TableCell>
+                    <TableCell>{expense.method || "N/A"}</TableCell>
+                    <TableCell className="flex gap-2">
                       <Button
-                        variant="destructive"
+                        variant="outline"
                         size="sm"
+                        onClick={() => handleEdit(expense)}
                         className="cursor-pointer"
                       >
-                        <Trash className="h-4 w-4" />
+                        <Edit className="h-4 w-4" />
                       </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Delete this expense?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDelete(expense._id)}
-                          className="cursor-pointer"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Card>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            className="cursor-pointer"
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Delete this expense?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() => handleDelete(expense._id)}
+                              className="cursor-pointer"
+                            >
+                              Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </>
+      )}
     </div>
   );
 }

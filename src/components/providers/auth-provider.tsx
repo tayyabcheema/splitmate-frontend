@@ -20,6 +20,8 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const PUBLIC_ROUTES = ["/login", "/signup", "/forgot-password"];
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -27,7 +29,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Load from localStorage on mount
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("user");
@@ -36,12 +37,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (isAuth && storedUser && token) {
         const parsedUser = JSON.parse(storedUser);
-        if (parsedUser && typeof parsedUser === "object") {
-          setIsAuthenticated(true);
-          setUser({ ...parsedUser, token });
-        }
+        setIsAuthenticated(true);
+        setUser({ ...parsedUser, token });
       } else {
-        // Clear if any one of them is missing
         localStorage.removeItem("user");
         localStorage.removeItem("isAuthenticated");
         localStorage.removeItem("token");
@@ -74,16 +72,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     router.push("/login");
   };
 
-  // Handle redirection based on auth state
   useEffect(() => {
     if (loading) return;
 
-    const authRoutes = ["/login", "/signup", "/forgot-password"];
-    const isAuthRoute = authRoutes.includes(pathname);
+    const isPublicRoute =
+      PUBLIC_ROUTES.includes(pathname) ||
+      pathname.startsWith("/reset-password");
 
-    if (isAuthenticated && isAuthRoute) {
+    if (isAuthenticated && isPublicRoute) {
       router.push("/dashboard");
-    } else if (!isAuthenticated && !isAuthRoute) {
+    } else if (!isAuthenticated && !isPublicRoute) {
       router.push("/login");
     }
   }, [isAuthenticated, pathname, loading, router]);
@@ -92,9 +90,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="space-y-4 w-full max-w-sm">
-          <Skeleton className="h-8 w-3/4 mx-auto" /> {/* App Title */}
-          <Skeleton className="h-10 w-full" /> {/* Input Placeholder */}
-          <Skeleton className="h-10 w-5/6 mx-auto" /> {/* Button Placeholder */}
+          <Skeleton className="h-8 w-3/4 mx-auto" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-5/6 mx-auto" />
         </div>
       </div>
     );

@@ -23,6 +23,7 @@ import {
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useRouter } from "next/navigation";
 
 interface Expense {
   _id: string;
@@ -64,6 +65,8 @@ export default function DashboardPage() {
   const [activitiesError, setActivitiesError] = useState<string | null>(null);
   const [user, setUser] = useState<{ _id: string; name: string } | null>(null);
 
+  const router = useRouter();
+
   // Load user from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -87,7 +90,7 @@ export default function DashboardPage() {
 
         const token = localStorage.getItem("token");
         if (!token) {
-          setError("No token found. Please login again.");
+          router.push("/login");
           return;
         }
 
@@ -234,7 +237,6 @@ export default function DashboardPage() {
   );
   const netBalance = totalOwing - totalOwed;
 
-  // --- UI code remains same ---
   return (
     <div className="p-4 lg:p-8 space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -313,78 +315,74 @@ export default function DashboardPage() {
             </CardTitle>
             <CardDescription>Manage your shared expenses</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
-            {loading && (
-              <div className="space-y-4">
-                {[1, 2, 3].map((i) => (
-                  <div
-                    key={i}
-                    className="flex items-center justify-between p-4 border rounded-lg"
-                  >
-                    <div className="flex-1 space-y-2">
-                      <Skeleton className="h-5 w-1/3" />
-                      <Skeleton className="h-4 w-2/3" />
-                      <Skeleton className="h-4 w-1/2" />
-                    </div>
-                    <Skeleton className="h-6 w-16" />
-                  </div>
-                ))}
-              </div>
-            )}
+         <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
+  {loading && (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div
+          key={i}
+          className="flex items-center justify-between p-4 border rounded-lg"
+        >
+          <div className="flex-1 space-y-2">
+            <Skeleton className="h-5 w-1/3" />
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="h-4 w-1/2" />
+          </div>
+          <Skeleton className="h-6 w-16" />
+        </div>
+      ))}
+    </div>
+  )}
 
-            {error && <p className="text-sm text-red-500">⚠️ {error}</p>}
-            {!loading && !error && groups.length === 0 && (
-              <p className="text-sm text-muted-foreground">
-                No groups yet. Create one to get started!
-              </p>
-            )}
+  {error && <p className="text-sm text-red-500">⚠️ {error}</p>}
+  {!loading && !error && groups.length === 0 && (
+    <p className="text-sm text-muted-foreground">
+      No groups yet. Create one to get started!
+    </p>
+  )}
 
-            {groups.map((group) => (
-              <Link key={group._id} href={`/groups/${group._id}`}>
-                <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="font-medium">{group.name}</h3>
-                      <Badge variant="secondary">
-                        {group.members.length} members
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                      <span>
-                        Total: PKR {(group.totalSpent ?? 0).toFixed(2)}
-                      </span>
-                      <span>•</span>
-                      <span>
-                        Avg: PKR {(group.averageExpense ?? 0).toFixed(2)}
-                      </span>
-                      <span>•</span>
-                      <span>
-                        Top: {group.topCategory?.name || "N/A"} (PKR{" "}
-                        {(group.topCategory?.amount ?? 0).toFixed(2)})
-                      </span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div
-                      className={`font-medium ${
-                        (group.yourBalance ?? 0) >= 0
-                          ? "text-green-600"
-                          : "text-red-600"
-                      }`}
-                    >
-                      PKR {Math.abs(group.yourBalance ?? 0).toFixed(2)}
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      {(group.yourBalance ?? 0) >= 0
-                        ? "You're owed"
-                        : "You owe"}
-                    </p>
-                    <ArrowRight className="h-4 w-4 text-muted-foreground mt-1" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </CardContent>
+  {groups.map((group) => (
+    <Link key={group._id} href={`/groups/${group._id}`}>
+      <div className="flex items-center justify-between p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+        {/* Left side */}
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-2">
+            <h3 className="font-medium">{group.name}</h3>
+            <Badge variant="secondary">{group.members.length} members</Badge>
+          </div>
+          <div className="flex items-center flex-wrap gap-3 text-sm text-muted-foreground">
+            <span>Total: PKR {(group.totalSpent ?? 0).toFixed(2)}</span>
+            <span>•</span>
+            <span>Avg: PKR {(group.averageExpense ?? 0).toFixed(2)}</span>
+            <span>•</span>
+            <span>
+              Top: {group.topCategory?.name || "N/A"} (PKR{" "}
+              {(group.topCategory?.amount ?? 0).toFixed(2)})
+            </span>
+          </div>
+        </div>
+
+        {/* Right side (modified order) */}
+        <div className="text-right flex flex-col items-end justify-center">
+          <div
+            className={`font-medium ${
+              (group.yourBalance ?? 0) >= 0
+                ? "text-green-600"
+                : "text-red-600"
+            }`}
+          >
+            PKR {Math.abs(group.yourBalance ?? 0).toFixed(2)}
+          </div>
+          <p className="text-xs text-muted-foreground mt-1">
+            {(group.yourBalance ?? 0) >= 0 ? "You're owed" : "You owe"}
+          </p>
+          <ArrowRight className="h-4 w-4 text-muted-foreground mt-2" />
+        </div>
+      </div>
+    </Link>
+  ))}
+</CardContent>
+
         </Card>
 
         <Card>

@@ -213,26 +213,61 @@ export default function GroupDetailsPage() {
   return (
     <div className="p-4 lg:p-8 space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/groups">
-          <Button variant="ghost" size="icon">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div className="flex-1">
-          <h1 className="text-3xl font-bold">Group Details</h1>
-          <p className="text-muted-foreground">
-            Expenses and activity in this group
-          </p>
+      {/* <div className="flex items-center gap-4 mb-6">
+          <Link href="/groups">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div className="flex-1">
+            <h1 className="text-3xl font-bold">Group Details</h1>
+            <p className="text-muted-foreground">
+              Expenses and activity in this group
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Link href={`/groups/${id}/add-expense`}>
+              <Button>
+                <Plus className="h-4 w-4 mr-2" />
+                Add Expense
+              </Button>
+            </Link>
+            <Button onClick={handleGenerateInvite} disabled={inviteLoading}>
+              {inviteLoading ? "Generating..." : "Invite"}
+            </Button>
+          </div>
+        </div> */}
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        {/* Left side */}
+        <div className="flex items-center gap-3">
+          <Link href="/groups">
+            <Button variant="ghost" size="icon">
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-3xl font-bold">Group Details</h1>
+            <p className="text-muted-foreground">
+              Expenses and activity in this group
+            </p>
+          </div>
         </div>
-        <div className="flex gap-2">
-          <Link href={`/groups/${id}/add-expense`}>
-            <Button>
+
+        {/* Right side: Buttons */}
+        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <Link href={`/groups/${id}/add-expense`} className="w-full sm:w-auto">
+            <Button className="w-full sm:w-auto">
               <Plus className="h-4 w-4 mr-2" />
               Add Expense
             </Button>
           </Link>
-          <Button onClick={handleGenerateInvite} disabled={inviteLoading}>
+          <Button
+            onClick={handleGenerateInvite}
+            disabled={inviteLoading}
+            className="w-full sm:w-auto"
+          >
             {inviteLoading ? "Generating..." : "Invite"}
           </Button>
         </div>
