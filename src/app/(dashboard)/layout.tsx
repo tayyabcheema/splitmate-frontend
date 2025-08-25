@@ -7,7 +7,8 @@ import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
-import { Home, Users, Bell, User, Menu, Wallet, Plus } from "lucide-react";
+import { Home, Users, Bell, User, Menu, Plus } from "lucide-react";
+import { DividoLogo } from "@/components/ui/divido-logo";
 import { useAuth } from "@/components/providers/auth-provider";
 import axios from "axios";
 
@@ -61,10 +62,10 @@ export default function DashboardLayout({
   const Sidebar = ({ mobile = false }: { mobile?: boolean }) => (
     <div className={`flex flex-col h-full ${mobile ? "w-full" : "w-64"}`}>
       <div className="flex items-center gap-2 p-6 border-b">
-        <div className="p-2 bg-blue-600 rounded-lg">
-          <Wallet className="h-6 w-6 text-white" />
+        <div className="p-2 rounded-lg">
+          <DividoLogo size={24} />
         </div>
-        <span className="text-xl font-bold">SplitMate</span>
+        <span className="text-xl font-bold">Divido</span>
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
@@ -134,10 +135,10 @@ export default function DashboardLayout({
             </SheetTrigger>
           </Sheet>
           <div className="flex items-center gap-2">
-            <div className="p-1 bg-blue-600 rounded">
-              <Wallet className="h-4 w-4 text-white" />
+            <div className="p-1 rounded">
+              <DividoLogo size={16} />
             </div>
-            <span className="font-bold">SplitMate</span>
+            <span className="font-bold">Divido</span>
           </div>
           <div className="w-10" />
         </div>

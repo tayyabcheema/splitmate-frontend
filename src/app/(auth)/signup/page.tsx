@@ -56,7 +56,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     return (
         <Card>
             <CardHeader className="text-center">
-                <CardTitle className="text-2xl font-bold">Join SplitMate</CardTitle>
+                <CardTitle className="text-2xl font-bold">Join Divido</CardTitle>
                 <CardDescription>Create your account to start splitting expenses</CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
