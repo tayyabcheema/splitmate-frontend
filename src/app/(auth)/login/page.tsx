@@ -17,12 +17,10 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import { useAuth } from "@/components/providers/auth-provider";
-import { Eye } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
 
@@ -36,16 +34,17 @@ export default function LoginPage() {
         { email, password }
       );
 
-      const { token, user } = res.data.data;
+      const data = res.data;
 
+      // Optional: also store token if returned
       localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+      localStorage.setItem("token", data.data.token);
 
-      toast(`Welcome back, ${user.name}!`);
+      toast("Welcome back! You have successfully logged in.");
       login({
-        ...user,
-        token,
+        ...data.user,
+        token: data.data.token,
       });
     } catch (error: any) {
       const message =
@@ -75,30 +74,17 @@ export default function LoginPage() {
               required
             />
           </div>
-
-          <div className="space-y-2 relative">
+          <div className="space-y-2">
             <Label htmlFor="password">Password</Label>
             <Input
               id="password"
-              type={showPassword ? "text" : "password"}
+              type="password"
               placeholder="Enter your password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            <button
-              type="button"
-              className="absolute right-3 top-9 text-gray-500 hover:text-gray-700"
-              onMouseDown={() => setShowPassword(true)}
-              onMouseUp={() => setShowPassword(false)}
-              onMouseLeave={() => setShowPassword(false)}
-              onTouchStart={() => setShowPassword(true)}
-              onTouchEnd={() => setShowPassword(false)}
-            >
-              <Eye size={18} />
-            </button>
           </div>
-
           <div className="text-right">
             <Link
               href="/forgot-password"
